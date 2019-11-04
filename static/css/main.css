@@ -1,0 +1,13 @@
+.full-container {
+    padding-top: 4%;
+    padding-bottom: 4%;
+}
+
+.full-navbar {
+    justify-content: normal;
+}
+
+.nav-right {
+    margin-left: auto;
+    display: flex;
+}

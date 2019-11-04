@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Gift Points</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+    {% if js %}
+    <script type="text/javascript" src="/static/js/{{ js }}"></script>
+    {% endif %}
+</head>
+<body>
+<nav class="navbar full-navbar navbar-dark bg-info">
+    <form method="get" action="/">
+        <button type="submit" class="navbar-brand btn btn-info">Gift Points</button>
+    </form>
+    <div class="nav-right">
+        {% if show_register %}
+        <form method="get" action="/register">
+            <button type="submit" class="btn btn-info">Register</button>
+        </form>
+        {% endif %}
+        {% if show_logout %}
+        <form method="post" action="/logout">
+            <button type="submit" class="btn btn-info">Log out</button>
+        </form>
+        {% endif %}
+    </div>
+
+</nav>
+<div class="container full-container">
+    {% block content %}{% endblock %}
+</div>
+</body>
+</html>
