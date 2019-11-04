@@ -1,5 +1,7 @@
 dom = {};
 
+POINTS_TO_CARD = 10000;
+
 function reset() {
     dom.$giftsContainer.hide();
     dom.$giftsContainer.empty();
@@ -28,8 +30,6 @@ function addSuccess($appendTo) {
 
 function renderGifts({user, usernames}, success) {
     const {giftable, redeemable} = user;
-
-    redeemable.balance += 10000
 
     dom.$giftsContainer.show();
     dom.$giftsContainer.append(`<p>You have ${giftable.balance} points left to give this month!</p>`);
@@ -93,32 +93,32 @@ function renderGifts({user, usernames}, success) {
     dom.$giftsContainer.append(`</br>`);
     dom.$giftsContainer.append(`<p>Your admirers have gifted you ${redeemable.balance} points!</p>`);
 
-    if (redeemable.balance > 10000) {
-        let redeemAmount = null;
+    if (redeemable.balance >= POINTS_TO_CARD) {
+        let redeemCards = null;
 
         const $redeemButton = $('<button class="btn btn-info" disabled>Redeem</button>').click(() => {
             $.post({
                 contentType: 'application/json',
                 url: `/redeem`,
                 dataType: 'json',
-                data: {
-                    amount: redeemAmount
-                }
+                data: JSON.stringify({
+                    cards: redeemCards
+                })
             })
-                .done(fetchDetails);
+                .done(fetchDetails.bind(null, true));
         });
 
         const $deduct = $(`<input class="form-control" readonly/>`);
         const $reward = $(`<input class="form-control" readonly/>`);
-        const maxRedeem = Math.floor(redeemable.balance / 10000);
+        const maxRedeem = Math.floor(redeemable.balance / POINTS_TO_CARD);
         const $redeemableInput = makeBalanceInput(maxRedeem)
             .change(function () {
-                redeemAmount = parseInt($(this).val(), 10);
-                let enable = redeemAmount > 0 && redeemAmount <= maxRedeem
+                redeemCards = parseInt($(this).val(), 10);
+                let enable = redeemCards > 0 && redeemCards <= maxRedeem;
                 $redeemButton.prop("disabled", !enable);
                 if (enable) {
-                    $deduct.val('' + redeemAmount * 10000)
-                    $reward.val('$' + redeemAmount * 100)
+                    $deduct.val('' + redeemCards * POINTS_TO_CARD);
+                    $reward.val('$' + redeemCards * 100);
                 }
             })
             .val(1)
@@ -128,14 +128,14 @@ function renderGifts({user, usernames}, success) {
         $localContainer.append($redeemButton);
         $localContainer.append("&nbsp;");
         $localContainer.append($redeemableInput);
-        $localContainer.append("&nbsp;tokens or&nbsp;");
+        $localContainer.append("&nbsp;cards or&nbsp;");
         $localContainer.append($deduct);
         $localContainer.append("&nbsp;points for&nbsp;");
         $localContainer.append($reward);
         dom.$giftsContainer.append($localContainer);
 
     } else {
-        dom.$giftsContainer.append(`<p>${10000 - redeemable.balance} more till you can redeem them.</p>`);
+        dom.$giftsContainer.append(`<p>${POINTS_TO_CARD - redeemable.balance} more till you can redeem them.</p>`);
     }
 
     if (success) {

@@ -75,8 +75,17 @@ def add(app):
         data = request.get_json()
 
         try:
-            print(data)
             model.gift(session['user_id'], **data)
+            return jsonify(success=True)
+        except Exception:
+            return abort(400)
+
+    @app.route('/redeem', methods=['POST'])
+    def redeem():
+        data = request.get_json()
+
+        try:
+            model.redeem(session['user_id'], **data)
             return jsonify(success=True)
         except Exception:
             return abort(400)

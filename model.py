@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from auth import Authenticator
+from datetime import datetime
 
 db = SQLAlchemy()
 auth = Authenticator()
@@ -130,9 +131,30 @@ def gift(giver_id, receiver_username, amount, message):
     receiver = User.query.filter(User.username == receiver_username).first()
 
     if amount > receiver.giftable.balance:
-        raise ValueError('The user can not gift that amount.')
+        raise ValueError('The user cannot gift that amount.')
 
     db.session.execute(f'''CALL giftpoints({giver_id}, {receiver.id}, {amount}, '{message}');''')
+    db.session.commit()
+
+
+def redeem(user_id, cards):
+    points = cards * 10000
+    redeemable = one(Redeemable, user_id)
+
+    print(points)
+
+    if points > redeemable.balance:
+        raise ValueError('The user cannot redeem that amount.')
+
+    print(points)
+
+    setattr(redeemable, 'balance', redeemable.balance - points)
+    create(Redemption, {
+        'userid': user_id,
+        'date': datetime.now(),
+        'cards': cards
+    })
+
     db.session.commit()
 
 
