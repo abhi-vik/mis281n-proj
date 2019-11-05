@@ -3,6 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from auth import Authenticator
 from datetime import datetime
 from util import convert
+from sqlalchemy import Table
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.sql.expression import Executable, ClauseElement
 
 db = SQLAlchemy()
 auth = Authenticator()
@@ -169,16 +172,25 @@ def history(user_id):
     } for g in map(convert, many(Gift)) if g['giverid'] == user_id or g['receiverid'] == user_id]
 
 
+## need to do the view in separate function
+## call the view here and return the expect thing
 def get_first_report():
-    return []
+    first_report = db.session.execute('''SELECT * FROM POINT_USAGE''')\
+        .fetchall()
+    return first_report
 
 
+## concern about the time part
 def get_second_report():
-    return []
+    second_report = db.session.execute('''SELECT * FROM NOT_GIVEOUT''')\
+        .fetchall()
+    return second_report
 
 
 def get_third_report():
-    return []
+    third_report = db.session.execute('''SELECT * FROM REDEMPTION''')\
+        .fetchall()
+    return third_report
 
 
 # [START crud]
@@ -234,6 +246,37 @@ def _create_database():
         VALUES (giverid, receiverid, NOW(), amount, message);
         END;
         ''')
+
+        db.session.execute('''
+        CREATE OR REPLACE VIEW POINT_USAGE AS
+        SELECT users.username, GivenOut.GIVEN_OUT, CashedIn.CASHED_IN, CashedIn.MONTH, CashedIn.YEAR
+        FROM users JOIN
+        ((SELECT giverid, SUM(amount) AS GIVEN_OUT, MONTH(date) AS MONTH, YEAR(date) AS YEAR
+          FROM gifts
+          GROUP BY giverid, MONTH(date), YEAR(date)) AS GivenOut
+        JOIN
+        (SELECT receiverid, SUM(amount) AS CASHED_IN, MONTH(date) AS MONTH, YEAR(date) AS YEAR
+         FROM gifts
+         GROUP BY receiverid, MONTH(date), YEAR(date)) AS CashedIn
+        ON GivenOut.giverid = CashedIn.receiverid)
+        ON users.id = CashedIn.receiverid
+        ORDER BY CashedIn.CASHED_IN desc;
+        ''')
+
+        db.session.execute('''
+        CREATE OR REPLACE VIEW NOT_GIVEOUT AS
+        SELECT giftables.userid, users.username
+        FROM giftables JOIN users ON giftables.userid = users.id
+        WHERE balance != 0;
+        ''')
+
+        db.session.execute('''
+        CREATE OR REPLACE VIEW REDEMPTION AS
+        SELECT *
+        FROM redemptions
+        WHERE MONTH(date) <= TIMESTAMPADD(MONTH, -2, NOW());
+        ''')
+
         db.session.commit()
 
     print("All tables created")

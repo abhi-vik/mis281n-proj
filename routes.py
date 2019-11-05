@@ -76,12 +76,12 @@ def init(app):
         report_type = request.args.get('type')
 
         if report_type == '2':
-            return router['report_two']([], data=convert(model.get_second_report()))
+            return router['report_two']([], data=model.get_second_report())
         elif report_type == '3':
-            return router['report_three']([], data=convert(model.get_third_report()))
+            return router['report_three']([], data=model.get_third_report())
         else:
             # assume default report
-            return router['report_one']([], data=convert(model.get_first_report()))
+            return router['report_one']([], data=model.get_first_report())
 
     @app.route('/details')
     def details():

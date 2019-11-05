@@ -2,6 +2,27 @@
 
 {% block content %}
 
-<p>Report 3</p>
+<p>Report #3: All Redemption</p>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th scope="col">RedemptionID</th>
+        <th scope="col">UserID</th>
+        <th scope="col">Date</th>
+        <th scope="col">Cards</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for report in data %}
+    <tr>
+        <td>{{ report.id }}</td>
+        <td>{{ report.userid }}</td>
+        <td>{{ report.date }}</td>
+        <td>{{ report.cards }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}

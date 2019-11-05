@@ -2,6 +2,29 @@
 
 {% block content %}
 
-<p>Report 1</p>
+<p>Report #1: Usage of Points</p>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th scope="col">User</th>
+        <th scope="col">GivenOut</th>
+        <th scope="col">CashedIn</th>
+        <th scope="col">Month</th>
+        <th scope="col">Year</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for report in data %}
+    <tr>
+        <td>{{ report.username }}</td>
+        <td>{{ report.GIVEN_OUT }}</td>
+        <td>{{ report.CASHED_IN }}</td>
+        <td>{{ report.MONTH }}</td>
+        <td>{{ report.YEAR }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}

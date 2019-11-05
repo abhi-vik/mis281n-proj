@@ -2,6 +2,23 @@
 
 {% block content %}
 
-<p>Report 2</p>
+<p>Report #2: Point Not Use</p>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th scope="col">UserName</th>
+        <th scope="col">UserID</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for report in data %}
+    <tr>
+        <td>{{ report.username }}</td>
+        <td>{{ report.userid }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}
