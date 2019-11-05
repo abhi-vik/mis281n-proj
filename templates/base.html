@@ -18,11 +18,18 @@
     <form method="get" action="/">
         <button type="submit" class="navbar-brand btn btn-info">Gift Points</button>
     </form>
+    {% if is_regular %}
+    <button class="btn btn-info" onclick="location.href='/'" type="button">Balance</button>
+    <button class="btn btn-info" onclick="location.href='/history'" type="button">History</button>
+    {% endif %}
+    {% if is_admin %}
+    <button class="btn btn-info" onclick="location.href='/reports?type=1'" type="button">Report 1</button>
+    <button class="btn btn-info" onclick="location.href='/reports?type=2'" type="button">Report 2</button>
+    <button class="btn btn-info" onclick="location.href='/reports?type=3'" type="button">Report 3</button>
+    {% endif %}
     <div class="nav-right">
         {% if show_register %}
-        <form method="get" action="/register">
-            <button type="submit" class="btn btn-info">Register</button>
-        </form>
+        <button class="btn btn-info" onclick="location.href='/register'" type="button">Register</button>
         {% endif %}
         {% if show_logout %}
         <form method="post" action="/logout">

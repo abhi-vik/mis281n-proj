@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th scope="col">From</th>
+        <th scope="col">To</th>
+        <th scope="col">Date</th>
+        <th scope="col">Points</th>
+        <th scope="col">Message</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for gift in data %}
+    <tr>
+        <td>{{ gift.giver }}</td>
+        <td>{{ gift.receiver }}</td>
+        <td>{{ gift.date }}</td>
+        <td>{{ gift.amount }}</td>
+        <td>{{ gift.message }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from auth import Authenticator
 from datetime import datetime
+from util import convert
 
 db = SQLAlchemy()
 auth = Authenticator()
@@ -59,7 +60,7 @@ class Gift(db.Model):
     message = db.Column(db.String(255))
 
     def __repr__(self):
-        return "<Gift(id=%s, message=%s, amount=%s)>" % (self.id, self.message, self.amount)
+        return "<Gift(id=%s, date=%s, amount=%s)>" % (self.id, self.date, self.amount)
 
 
 class Redemption(db.Model):
@@ -85,6 +86,10 @@ class Month(db.Model):
 
 
 # [END model]
+
+def get_regular_users():
+    return [u for u in many(User) if not u.admin]
+
 
 def authenticate(username, password):
     user = User.query.filter(User.username == username).first()
@@ -121,8 +126,7 @@ def create_user(data):
 
 def details(user_id):
     user = one(User, user_id)
-    usernames = [u.username for u in many(User)]
-    usernames.remove(user.username)
+    usernames = [u.username for u in get_regular_users() if u.id != user.id]
 
     return user, usernames
 
@@ -141,12 +145,8 @@ def redeem(user_id, cards):
     points = cards * 10000
     redeemable = one(Redeemable, user_id)
 
-    print(points)
-
     if points > redeemable.balance:
         raise ValueError('The user cannot redeem that amount.')
-
-    print(points)
 
     setattr(redeemable, 'balance', redeemable.balance - points)
     create(Redemption, {
@@ -156,6 +156,29 @@ def redeem(user_id, cards):
     })
 
     db.session.commit()
+
+
+def history(user_id):
+    user_ids_to_usernames = {u.id: u.username for u in get_regular_users()}
+    return [{
+        'giver': user_ids_to_usernames[g['giverid']],
+        'receiver': user_ids_to_usernames[g['receiverid']],
+        'date': g['date'],
+        'amount': g['amount'],
+        'message': g['message']
+    } for g in map(convert, many(Gift)) if g['giverid'] == user_id or g['receiverid'] == user_id]
+
+
+def get_first_report():
+    return []
+
+
+def get_second_report():
+    return []
+
+
+def get_third_report():
+    return []
 
 
 # [START crud]

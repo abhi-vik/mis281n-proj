@@ -3,6 +3,7 @@ import datetime
 from pytz import timezone
 
 # assumption made for course purposes that we only use this for now in Texas
+dt_utc = timezone('UTC')
 dt_central = timezone('US/Central')
 
 
@@ -27,7 +28,7 @@ def convert(model_obj):
         elif key in ['giftable', 'redeemable']:
             result[key] = convert(value)
         elif isinstance(value, datetime.datetime):
-            result[key] = value.astimezone(dt_central).strftime('%c')
+            result[key] = dt_utc.localize(value).astimezone(dt_central).strftime('%b %d %Y')
         elif key not in ['_sa_instance_state']:
             result[key] = value
 
@@ -35,11 +36,11 @@ def convert(model_obj):
 
 
 def delay(route: str, flags: list, js=None):
-    def invoke(new_flags: list, data=None):
+    def invoke(new_flags: list = None, data=None):
         args = {} if data is None else {'data': data}
         if js is not None:
             args['js'] = js
-        for flag in flags + new_flags:
+        for flag in flags + (new_flags or []):
             args[flag] = True
         return render_template(route, **args)
 

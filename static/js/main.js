@@ -91,7 +91,7 @@ function renderGifts({user, usernames}, success) {
     }
 
     dom.$giftsContainer.append(`</br>`);
-    dom.$giftsContainer.append(`<p>Your admirers have gifted you ${redeemable.balance} points!</p>`);
+    dom.$giftsContainer.append(`<p>Your admirers have gifted you a total of ${redeemable.balance} points!</p>`);
 
     if (redeemable.balance >= POINTS_TO_CARD) {
         let redeemCards = null;
@@ -135,7 +135,7 @@ function renderGifts({user, usernames}, success) {
         dom.$giftsContainer.append($localContainer);
 
     } else {
-        dom.$giftsContainer.append(`<p>${POINTS_TO_CARD - redeemable.balance} more till you can redeem them.</p>`);
+        dom.$giftsContainer.append(`<p>Only ${POINTS_TO_CARD - redeemable.balance} more till you can redeem them.</p>`);
     }
 
     if (success) {
@@ -145,6 +145,12 @@ function renderGifts({user, usernames}, success) {
 }
 
 function fetchDetails(success) {
+    $.get({
+        contentType: 'application/json',
+        url: `/history`,
+        dataType: 'json'
+    });
+
     $.get({
         contentType: 'application/json',
         url: '/details',
