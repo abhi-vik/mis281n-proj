@@ -8,18 +8,18 @@
     <thead>
     <tr>
         <th scope="col">RedemptionID</th>
-        <th scope="col">UserID</th>
         <th scope="col">Date</th>
+        <th scope="col">UserID</th>
         <th scope="col">Cards</th>
     </tr>
     </thead>
     <tbody>
     {% for report in data %}
     <tr>
-        <td>{{ report.id }}</td>
-        <td>{{ report.userid }}</td>
-        <td>{{ report.date }}</td>
-        <td>{{ report.cards }}</td>
+        <td>{{ report.TRANSACID }}</td>
+        <td>{{ report.DATE }}</td>
+        <td>{{ report.USERID }}</td>
+        <td>{{ report.CARDS_REDEMPTIONS }}</td>
     </tr>
     {% endfor %}
     </tbody>

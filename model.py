@@ -4,6 +4,7 @@ from auth import Authenticator
 from datetime import datetime
 from util import convert
 
+
 NEW_BALANCE = 1000
 POINTS_PER_CARD = 10000
 
@@ -131,7 +132,7 @@ def gift(giver_id, receiver_username, amount, message):
     if amount > receiver.giftable.balance:
         raise ValueError('The user cannot gift that amount.')
 
-    db.session.execute(f'''CALL giftpoints({giver_id}, {receiver.id}, {amount}, '{message}');''')
+    db.session.execute('''CALL giftpoints({giver_id}, {receiver.id}, {amount}, '{message}');''')
     db.session.commit()
 
 
@@ -172,7 +173,10 @@ def reset():
 ## need to do the view in separate function
 ## call the view here and return the expect thing
 def get_first_report():
-    return db.session.execute('''SELECT * FROM POINT_USAGE''').fetchall()
+    by_month = db.session.execute('''SELECT * FROM MONTH_POINT_USAGE''').fetchall()
+    by_user = db.session.execute('''SELECT * FROM USER_POINT_USAGE''').fetchall()
+
+    return by_month, by_user
 
 
 def get_second_report():
@@ -238,16 +242,32 @@ def _create_database():
         ''')
 
         db.session.execute('''
-        CREATE OR REPLACE VIEW POINT_USAGE AS
-        SELECT users.username, GivenOut.GIVEN_OUT, CashedIn.CASHED_IN, CashedIn.MONTH, CashedIn.YEAR
-        FROM users JOIN
+        CREATE OR REPLACE VIEW MONTH_POINT_USAGE AS
+        SELECT GivenOut.MONTH, GivenOut.YEAR, SUM(GivenOut.GIVEN_OUT) AS MONTH_GIVEN_OUT, SUM(CashedIn.CASHED_IN) AS MONTH_CASHED_IN
+        FROM 
         ((SELECT giverid, SUM(amount) AS GIVEN_OUT, MONTH(date) AS MONTH, YEAR(date) AS YEAR
           FROM gifts
           GROUP BY giverid, MONTH(date), YEAR(date)) AS GivenOut
         JOIN
-        (SELECT receiverid, SUM(amount) AS CASHED_IN, MONTH(date) AS MONTH, YEAR(date) AS YEAR
+         (SELECT receiverid, SUM(amount) AS CASHED_IN, MONTH(date) AS MONTH, YEAR(date) AS YEAR
          FROM gifts
          GROUP BY receiverid, MONTH(date), YEAR(date)) AS CashedIn
+        ON GivenOut.giverid = CashedIn.receiverid)
+        GROUP BY GivenOut.MONTH, GivenOut.YEAR
+        ORDER BY GivenOut.YEAR, GivenOut.MONTH asc;
+        ''')
+
+        db.session.execute('''
+        CREATE OR REPLACE VIEW USER_POINT_USAGE AS
+        SELECT users.username, GivenOut.GIVEN_OUT, CashedIn.CASHED_IN
+        FROM users JOIN
+        ((SELECT giverid, SUM(amount) AS GIVEN_OUT
+          FROM gifts
+          GROUP BY giverid) AS GivenOut
+        JOIN
+         (SELECT receiverid, SUM(amount) AS CASHED_IN
+         FROM gifts
+         GROUP BY receiverid) AS CashedIn
         ON GivenOut.giverid = CashedIn.receiverid)
         ON users.id = CashedIn.receiverid
         ORDER BY CashedIn.CASHED_IN desc;
@@ -263,9 +283,14 @@ def _create_database():
 
         db.session.execute('''
         CREATE OR REPLACE VIEW REDEMPTION AS
-        SELECT *
-        FROM redemptions
-        WHERE MONTH(date) <= TIMESTAMPADD(MONTH, -2, NOW());
+        SELECT redemptions.id AS TRANSACID, redemptions.date AS DATE, CardRedemption.userid AS USERID, CardRedemption.CARDS_REDEMPTION AS CARDS_REDEMPTIONS
+        FROM redemptions JOIN
+        (SELECT MONTH(date), userid, SUM(cards) AS CARDS_REDEMPTION
+         FROM redemptions
+         WHERE MONTH(date) <= TIMESTAMPADD(MONTH, -2, NOW())
+         GROUP BY userid, MONTH(date)) AS CardRedemption
+        ON redemptions.userid = CardRedemption.userid
+        ORDER BY DATE, USERID;
         ''')
 
         db.session.commit()

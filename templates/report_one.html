@@ -7,21 +7,38 @@
 <table class="table table-bordered">
     <thead>
     <tr>
-        <th scope="col">User</th>
+        <th scope="col">Year</th>
+        <th scope="col">Month</th>
         <th scope="col">GivenOut</th>
         <th scope="col">CashedIn</th>
-        <th scope="col">Month</th>
-        <th scope="col">Year</th>
     </tr>
     </thead>
     <tbody>
-    {% for report in data %}
+    {% for report in data[0] %}
+    <tr>
+        <td>{{ report.YEAR }}</td>
+        <td>{{ report.MONTH }}</td>
+        <td>{{ report.MONTH_GIVEN_OUT }}</td>
+        <td>{{ report.MONTH_CASHED_IN }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th scope="col">User</th>
+        <th scope="col">GivenOut</th>
+        <th scope="col">CashedIn</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for report in data[1] %}
     <tr>
         <td>{{ report.username }}</td>
         <td>{{ report.GIVEN_OUT }}</td>
         <td>{{ report.CASHED_IN }}</td>
-        <td>{{ report.MONTH }}</td>
-        <td>{{ report.YEAR }}</td>
     </tr>
     {% endfor %}
     </tbody>
