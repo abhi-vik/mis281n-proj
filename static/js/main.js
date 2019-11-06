@@ -37,7 +37,7 @@ function renderGifts({user, usernames}, success) {
     if (giftable.balance >= 1) {
         let receiver = null;
         let giftAmount = null;
-        let message = "Thank you!";
+        let message = '';
 
         const $giftButton = $('<button class="btn btn-info" disabled>Gift</button>').click(() => {
             $.post({
@@ -83,7 +83,7 @@ function renderGifts({user, usernames}, success) {
         $localContainer.append("&nbsp;");
         $localContainer.append($giftableAmount);
         $localContainer.append("&nbsp;");
-        $localContainer.append(" points, saying ");
+        $localContainer.append("points, saying");
         $localContainer.append("&nbsp;");
         $localContainer.append($messageInput);
         $localContainer.append("&nbsp;");
@@ -139,7 +139,6 @@ function renderGifts({user, usernames}, success) {
     }
 
     if (success) {
-        dom.$giftsContainer.append(`<br/>`);
         addSuccess(dom.$giftsContainer);
     }
 }

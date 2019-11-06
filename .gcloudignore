@@ -1,7 +1,10 @@
 .ipynb_checkpoints
 __pycache__
 .idea
+.DS_Store
 
 .git
 .gitignore
+
 cloud_sql_proxy
+README.md

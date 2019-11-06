@@ -7,15 +7,15 @@
 <table class="table table-bordered">
     <thead>
     <tr>
-        <th scope="col">UserName</th>
-        <th scope="col">UserID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Balance</th>
     </tr>
     </thead>
     <tbody>
     {% for report in data %}
     <tr>
         <td>{{ report.username }}</td>
-        <td>{{ report.userid }}</td>
+        <td>{{ report.balance }}</td>
     </tr>
     {% endfor %}
     </tbody>

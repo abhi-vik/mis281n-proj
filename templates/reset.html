@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<p>Are you certain that you want to reset the giftable point balance?</p>
+<p>This action cannot be reversed.</p>
+
+<form method="post" action="/reset">
+    <button type="submit" class="btn btn-danger">Reset</button>
+</form>
+
+{% endblock %}

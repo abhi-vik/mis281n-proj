@@ -3,13 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from auth import Authenticator
 from datetime import datetime
 from util import convert
-from sqlalchemy import Table
-from sqlalchemy.ext.compiler import compiles
-from sqlalchemy.sql.expression import Executable, ClauseElement
+
+NEW_BALANCE = 1000
+POINTS_PER_CARD = 10000
 
 db = SQLAlchemy()
 auth = Authenticator()
-
 
 def init_app(app):
     app.config.setdefault('SQLALCHEMY_TRACK_MODIFICATIONS', False)
@@ -78,20 +77,10 @@ class Redemption(db.Model):
         return "<Redemption(id=%s, userid=%s, cards=%s)>" % (self.id, self.userid, self.cards)
 
 
-class Month(db.Model):
-    __tablename__ = 'month'
-
-    id = db.Column(db.Integer, primary_key=True)
-    month = db.Column(db.Integer, nullable=False)
-
-    def __repr__(self):
-        return "<Month(id=%s, month=%s)>" % (self.id, self.month)
-
-
 # [END model]
 
 def get_regular_users():
-    return [u for u in many(User) if not u.admin]
+    return [user for user in many(User) if not user.admin]
 
 
 def authenticate(username, password):
@@ -115,14 +104,16 @@ def create_user(data):
     })
 
     user = create(User, data)
-    create(Giftable, {
-        'userid': user.id,
-        'balance': 1000
-    })
-    create(Redeemable, {
-        'userid': user.id,
-        'balance': 0
-    })
+
+    if not user.admin:
+        create(Giftable, {
+            'userid': user.id,
+            'balance': NEW_BALANCE
+        })
+        create(Redeemable, {
+            'userid': user.id,
+            'balance': 0
+        })
 
     db.session.commit()
 
@@ -145,7 +136,7 @@ def gift(giver_id, receiver_username, amount, message):
 
 
 def redeem(user_id, cards):
-    points = cards * 10000
+    points = cards * POINTS_PER_CARD
     redeemable = one(Redeemable, user_id)
 
     if points > redeemable.balance:
@@ -172,25 +163,24 @@ def history(user_id):
     } for g in map(convert, many(Gift)) if g['giverid'] == user_id or g['receiverid'] == user_id]
 
 
+def reset():
+    [setattr(one(Giftable, user.id), 'balance', NEW_BALANCE) for user in get_regular_users()]
+
+    db.session.commit()
+
+
 ## need to do the view in separate function
 ## call the view here and return the expect thing
 def get_first_report():
-    first_report = db.session.execute('''SELECT * FROM POINT_USAGE''')\
-        .fetchall()
-    return first_report
+    return db.session.execute('''SELECT * FROM POINT_USAGE''').fetchall()
 
 
-## concern about the time part
 def get_second_report():
-    second_report = db.session.execute('''SELECT * FROM NOT_GIVEOUT''')\
-        .fetchall()
-    return second_report
+    return db.session.execute('''SELECT * FROM NOT_GIVEOUT''').fetchall()
 
 
 def get_third_report():
-    third_report = db.session.execute('''SELECT * FROM REDEMPTION''')\
-        .fetchall()
-    return third_report
+    return db.session.execute('''SELECT * FROM REDEMPTION''').fetchall()
 
 
 # [START crud]
@@ -265,9 +255,10 @@ def _create_database():
 
         db.session.execute('''
         CREATE OR REPLACE VIEW NOT_GIVEOUT AS
-        SELECT giftables.userid, users.username
+        SELECT users.username, giftables.balance
         FROM giftables JOIN users ON giftables.userid = users.id
-        WHERE balance != 0;
+        WHERE balance != 0
+        ORDER BY balance DESC;
         ''')
 
         db.session.execute('''

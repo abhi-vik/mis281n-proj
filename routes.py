@@ -9,7 +9,8 @@ router = {
     'history': delay('history.html', ['is_regular', 'show_logout']),
     'report_one': delay('report_one.html', ['is_admin', 'show_logout']),
     'report_two': delay('report_two.html', ['is_admin', 'show_logout']),
-    'report_three': delay('report_three.html', ['is_admin', 'show_logout'])
+    'report_three': delay('report_three.html', ['is_admin', 'show_logout']),
+    'reset': delay('reset.html', ['is_admin', 'show_logout'])
 }
 
 
@@ -83,6 +84,21 @@ def init(app):
             # assume default report
             return router['report_one']([], data=model.get_first_report())
 
+    @app.route('/reset', methods=['GET', 'POST'])
+    def reset():
+        if 'user_id' not in session:
+            return redirect('/login')
+
+        if not session['user_admin']:
+            return router['main']()
+
+        if request.method == 'POST':
+            model.reset()
+
+            return redirect('/reports')
+
+        return router['reset']()
+
     @app.route('/details')
     def details():
         if 'user_id' not in session:
@@ -130,5 +146,3 @@ def init(app):
             session.permanent = False
 
         return redirect('/login')
-
-    return app

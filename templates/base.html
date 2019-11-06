@@ -15,9 +15,7 @@
 </head>
 <body>
 <nav class="navbar full-navbar navbar-dark bg-info">
-    <form method="get" action="/">
-        <button type="submit" class="navbar-brand btn btn-info">Gift Points</button>
-    </form>
+    <button class="navbar-brand btn btn-info" onclick="location.href='/'" type="button" >Gift Points</button>
     {% if is_regular %}
     <button class="btn btn-info" onclick="location.href='/'" type="button">Balance</button>
     <button class="btn btn-info" onclick="location.href='/history'" type="button">History</button>
@@ -28,6 +26,9 @@
     <button class="btn btn-info" onclick="location.href='/reports?type=3'" type="button">Report 3</button>
     {% endif %}
     <div class="nav-right">
+        {% if is_admin %}
+        <button class="btn btn-info" onclick="location.href='/reset'" type="button">Reset</button>
+        {% endif %}
         {% if show_register %}
         <button class="btn btn-info" onclick="location.href='/register'" type="button">Register</button>
         {% endif %}
