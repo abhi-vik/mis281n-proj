@@ -1,5 +1,9 @@
 # Data Management MIS281N mid-term project
 
+ER Diagram:
+
+![ER Diagram](https://github.com/abhi-vik/mis281n-proj/blob/master/docs/Midterm%20Project%20ER%20Diagram.png)
+
 DDL:
 
 ```
