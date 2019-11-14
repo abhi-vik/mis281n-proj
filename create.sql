@@ -8,7 +8,7 @@ BEGIN
 UPDATE giftables set balance=(balance-amount) WHERE userid = giverid;
 
 UPDATE redeemables set balance=(balance+amount) WHERE userid = receiverid;
-
+http://localhost:6419/
 INSERT INTO gifts (giverid, receiverid, date, amount, message) VALUES (giverid, receiverid, NOW(), amount, message);
 END;
 
@@ -53,7 +53,7 @@ CREATE OR REPLACE VIEW REDEMPTION AS
 SELECT redemptions.date AS DATE, users.username AS USERNAME, CardRedemption.CARDS_REDEMPTION AS CARDS_REDEMPTIONS
 FROM redemptions JOIN
   (SELECT MONTH(date), userid, SUM(cards) AS CARDS_REDEMPTION
-   FROM redemptions
+   FROM redemptionsDML
    WHERE MONTH(date) <= TIMESTAMPADD(MONTH, -2, NOW())
    GROUP BY userid, MONTH(date)) AS CardRedemption
 ON redemptions.userid = CardRedemption.userid

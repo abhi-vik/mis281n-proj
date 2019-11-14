@@ -155,13 +155,14 @@ def redeem(user_id, cards):
 
 def history(user_id):
     user_ids_to_usernames = {u.id: u.username for u in get_regular_users()}
+    gifts = Gift.query.order_by(Gift.date.desc()).all()
     return [{
         'giver': user_ids_to_usernames[g['giverid']],
         'receiver': user_ids_to_usernames[g['receiverid']],
         'date': g['date'],
         'amount': g['amount'],
         'message': g['message']
-    } for g in map(convert, many(Gift)) if g['giverid'] == user_id or g['receiverid'] == user_id]
+    } for g in map(convert, gifts) if g['giverid'] == user_id or g['receiverid'] == user_id]
 
 
 def reset():
