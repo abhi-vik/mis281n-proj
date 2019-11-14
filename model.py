@@ -132,7 +132,7 @@ def gift(giver_id, receiver_username, amount, message):
     if amount > receiver.giftable.balance:
         raise ValueError('The user cannot gift that amount.')
 
-    db.session.execute('''CALL giftpoints({giver_id}, {receiver.id}, {amount}, '{message}');''')
+    db.session.execute(f'''CALL giftpoints({giver_id}, {receiver.id}, {amount}, '{message}');''')
     db.session.commit()
 
 

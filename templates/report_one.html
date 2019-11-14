@@ -2,35 +2,38 @@
 
 {% block content %}
 
-<p>Report #1: Usage of Points</p>
+<p>Points gifted and received grouped by month:</p>
 
 <table class="table table-bordered">
     <thead>
     <tr>
         <th scope="col">Year</th>
         <th scope="col">Month</th>
-        <th scope="col">GivenOut</th>
-        <th scope="col">CashedIn</th>
+        <th scope="col">Gifted</th>
+        <th scope="col">Received</th>
     </tr>
     </thead>
     <tbody>
     {% for report in data[0] %}
     <tr>
-        <td>{{ report.YEAR }}</td>
-        <td>{{ report.MONTH }}</td>
-        <td>{{ report.MONTH_GIVEN_OUT }}</td>
-        <td>{{ report.MONTH_CASHED_IN }}</td>
+        <td>{{ report.year }}</td>
+        <td>{{ report.month }}</td>
+        <td>{{ report.given }}</td>
+        <td>{{ report.received }}</td>
     </tr>
     {% endfor %}
     </tbody>
 </table>
 
+<br/>
+<p>Total points gifted and received by users:</p>
+
 <table class="table table-bordered">
     <thead>
     <tr>
         <th scope="col">User</th>
-        <th scope="col">GivenOut</th>
-        <th scope="col">CashedIn</th>
+        <th scope="col">Gifted</th>
+        <th scope="col">Received</th>
     </tr>
     </thead>
     <tbody>
