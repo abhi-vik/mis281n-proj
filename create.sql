@@ -15,18 +15,13 @@ END;
 $$
 
 CREATE OR REPLACE VIEW MONTH_POINT_USAGE AS
-SELECT GivenOut.MONTH, GivenOut.YEAR, SUM(GivenOut.GIVEN_OUT) AS MONTH_GIVEN_OUT, SUM(CashedIn.CASHED_IN) AS MONTH_CASHED_IN
-FROM
-((SELECT giverid, SUM(amount) AS GIVEN_OUT, MONTH(date) AS MONTH, YEAR(date) AS YEAR
-  FROM gifts
-  GROUP BY giverid, MONTH(date), YEAR(date)) AS GivenOut
-JOIN
- (SELECT receiverid, SUM(amount) AS CASHED_IN, MONTH(date) AS MONTH, YEAR(date) AS YEAR
- FROM gifts
- GROUP BY receiverid, MONTH(date), YEAR(date)) AS CashedIn
-ON GivenOut.giverid = CashedIn.receiverid)
-GROUP BY GivenOut.MONTH, GivenOut.YEAR
-ORDER BY GivenOut.YEAR, GivenOut.MONTH asc;
+SELECT year(date) AS year,
+    month(date) AS month,
+    sum(gifts.amount) AS given,
+    sum(gifts.amount) AS received
+FROM gifts
+GROUP BY year, month
+ORDER BY year, month asc;
 
 $$
 
@@ -49,7 +44,7 @@ $$
 CREATE OR REPLACE VIEW NOT_GIVEOUT AS
 SELECT users.username, giftables.balance
 FROM giftables JOIN users ON giftables.userid = users.id
-WHERE balance != 0
+WHERE balance > 0
 ORDER BY balance DESC;
 
 $$
