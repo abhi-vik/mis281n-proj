@@ -53,7 +53,7 @@ CREATE OR REPLACE VIEW REDEMPTION AS
 SELECT redemptions.date AS DATE, users.username AS USERNAME, CardRedemption.CARDS_REDEMPTION AS CARDS_REDEMPTIONS
 FROM redemptions JOIN
   (SELECT MONTH(date), userid, SUM(cards) AS CARDS_REDEMPTION
-   FROM redemptionsDML
+   FROM redemptions
    WHERE MONTH(date) <= TIMESTAMPADD(MONTH, -2, NOW())
    GROUP BY userid, MONTH(date)) AS CardRedemption
 ON redemptions.userid = CardRedemption.userid
