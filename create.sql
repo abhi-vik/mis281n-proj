@@ -8,7 +8,7 @@ BEGIN
 UPDATE giftables set balance=(balance-amount) WHERE userid = giverid;
 
 UPDATE redeemables set balance=(balance+amount) WHERE userid = receiverid;
-http://localhost:6419/
+
 INSERT INTO gifts (giverid, receiverid, date, amount, message) VALUES (giverid, receiverid, NOW(), amount, message);
 END;
 
